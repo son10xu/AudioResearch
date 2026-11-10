@@ -53,8 +53,7 @@ distributed_training:
 criterion:
   _name: model
   log_keys:
-    - _predictions
-    - _targets
+    - correct
 
 optimization:
   max_update: 8000

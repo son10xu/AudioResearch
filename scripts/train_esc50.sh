@@ -103,8 +103,8 @@ if [[ ! -f "$CONFIG_DIR/${CONFIG_NAME}.yaml" ]]; then
     exit 1
 fi
 
-if [[ ! -f "$USER_DIR/__init__.py" ]]; then
-    echo "ERROR: SSLAM Fairseq user module not found."
+if [[ ! -d "$USER_DIR/tasks" || ! -d "$USER_DIR/models" ]]; then
+    echo "ERROR: SSLAM tasks/models directories not found."
     exit 1
 fi
 
