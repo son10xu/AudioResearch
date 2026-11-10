@@ -1,0 +1,104 @@
+
+# SSLAM ESC-50 Fine-tuning
+# Based on the original SSLAM Fairseq configuration
+# Target: 5-fold ESC-50 reproduction
+
+common:
+  fp16: true
+  log_format: json
+  log_interval: 100
+  tensorboard_logdir: tb
+  fp16_no_flatten_grads: true
+
+checkpoint:
+  save_interval: 1
+  save_interval_updates: 1000
+  keep_interval_updates: 2
+  no_epoch_checkpoints: true
+  best_checkpoint_metric: accuracy
+  maximize_best_checkpoint_metric: true
+  no_save: false
+
+task:
+  _name: mae_image_classification
+
+  # Override for each Kaggle fold
+  data: /kaggle/working/AudioResearch/datasets/manifests/ESC50/fold_1
+
+  downsr_16hz: true
+  audio_mae: true
+  target_length: 1024
+
+  roll_aug: true
+  noise: false
+  h5_format: false
+
+  AS2M_finetune: false
+  spcv1_finetune: false
+  spcv2_eval: false
+  esc50_eval: true
+
+dataset:
+  num_workers: 4
+  batch_size: 48
+  skip_invalid_size_inputs_valid_test: true
+  required_batch_size_multiple: 2
+  train_subset: train
+  valid_subset: eval
+
+distributed_training:
+  distributed_world_size: 1
+  ddp_backend: c10d
+
+criterion:
+  _name: model
+  log_keys:
+    - _predictions
+    - _targets
+
+optimization:
+  max_update: 8000
+  lr: [0.0001]
+
+optimizer:
+  _name: composite
+  dynamic_groups: true
+  groups:
+    default:
+      lr_float: 0.0001
+      optimizer:
+        _name: adam
+        adam_betas: [0.9, 0.95]
+        weight_decay: 0.05
+      lr_scheduler:
+        _name: cosine
+        warmup_updates: 800
+        min_lr: 0.000001
+
+lr_scheduler: pass_through
+
+model:
+  _name: mae_image_classification
+
+  # Override with the actual Fairseq checkpoint
+  model_path: /kaggle/working/checkpoints/sslam_pretrained.pt
+
+  audio_mae: true
+  num_classes: 50
+
+  mixup: 0.0
+  mixup_prob: 0.0
+
+  specaug: true
+  mask_ratio: 0.2
+
+  prediction_mode: PredictionMode.CLS_TOKEN
+
+  spcv2_eval: false
+  esc50_eval: true
+
+  target_length: 1024
+
+  label_smoothing: 0.0
+  freqm: 25
+  timem: 200
