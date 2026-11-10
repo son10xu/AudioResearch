@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Datasets
+/datasets/
+
+# Model checkpoints
+/checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Training outputs
+/results/
+/logs/
+**/logs/
+wandb/
+tb/
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+.kaggle/
+
+# System
+.DS_Store
